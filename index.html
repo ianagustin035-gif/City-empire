@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>NEON CITY: ULTIMATE TYCOON</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05050a;
+  --panel: #0d0f18;
+  --card: #141824;
+  --border: #232a3e;
+  --neon-cyan: #00f0ff;
+  --neon-pink: #ff0055;
+  --neon-gold: #ffe600;
+  --neon-green: #00ff66;
+  --neon-purple: #b000ff;
+  --text: #ffffff;
+  --text-dim: #7e8b9b;
+}
+
+* { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(255, 0, 85, 0.1) 0%, transparent 50%);
+}
+
+.app { max-width: 1200px; margin: 0 auto; padding: 12px; }
+
+/* HEADER & STATS */
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(13, 15, 24, 0.8); backdrop-filter: blur(10px);
+  padding: 10px 16px; border-radius: 16px; border: 1px solid var(--border);
+  margin-bottom: 12px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+}
+.logo {
+  font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900;
+  background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+.header-actions { display: flex; gap: 8px; }
+.btn-icon {
+  background: var(--card); border: 1px solid var(--border); color: #fff;
+  padding: 8px 12px; border-radius: 10px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-icon:hover { border-color: var(--neon-cyan); transform: translateY(-2px); }
+
+/* MAIN GRID */
+.grid { display: grid; grid-template-columns: 1fr 340px; gap: 12px; }
+
+/* PANEL ESTILO CYBERPUNK */
+.panel {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 16px; position: relative; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* BIG MONEY DISPLAY */
+.money-container {
+  text-align: center; padding: 10px 0; position: relative;
+}
+.money-title { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+.money-val {
+  font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900;
+  color: var(--neon-gold); text-shadow: 0 0 15px rgba(255, 230, 0, 0.4);
+  margin: 4px 0; transition: transform 0.1s;
+}
+.rate-val {
+  font-size: 15px; color: var(--neon-green); font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+}
+
+/* CLICK TAP ZONE / MAP */
+.city-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+  background: #080a10; padding: 10px; border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05); margin: 12px 0;
+}
+.plot {
+  aspect-ratio: 1; background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 26px;
+  cursor: pointer; transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative; overflow: hidden;
+}
+.plot:hover { border-color: var(--neon-cyan); transform: scale(1.05); z-index: 2; }
+.plot:active { transform: scale(0.92); }
+.plot.empty { opacity: 0.3; font-size: 16px; border-style: dashed; }
+.plot small { position: absolute; bottom: 2px; font-size: 9px; font-weight: 800; color: var(--text-dim); }
+
+/* TAP BOTÓN ENORME */
+.tap-btn {
+  width: 100%; padding: 18px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--neon-cyan), #0088ff);
+  color: #000; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900;
+  border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.4); transition: all 0.1s;
+  position: relative; overflow: hidden;
+}
+.tap-btn:active { transform: scale(0.98); box-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
+
+/* COMBO BAR */
+.combo-container {
+  margin-top: 10px; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 6px 10px;
+  display: flex; align-items: center; gap: 10px; border: 1px solid var(--border);
+}
+.combo-bar { flex: 1; height: 8px; background: #1a202c; border-radius: 4px; overflow: hidden; }
+.combo-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink)); transition: width 0.1s linear; }
+.combo-text { font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 800; color: var(--neon-pink); }
+
+/* TABS */
+.tabs { display: flex; gap: 6px; margin: 12px 0; overflow-x: auto; padding-bottom: 4px; }
+.tab {
+  flex: 1; padding: 10px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 12px; font-weight: 700; cursor: pointer;
+  text-align: center; white-space: nowrap; font-size: 13px; transition: all 0.2s;
+}
+.tab.active {
+  background: var(--panel); border-color: var(--neon-cyan); color: #fff;
+  box-shadow: 0 0 10px rgba(0,240,255,0.2);
+}
+
+/* CARDS LIST */
+.cards-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.card-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px; display: flex; flex-direction: column; justify-content: space-between;
+  transition: all 0.2s; position: relative;
+}
+.card-item:hover { border-color: var(--neon-pink); }
+.card-title { font-weight: 800; font-size: 15px; display: flex; justify-content: space-between; }
+.card-desc { font-size: 12px; color: var(--text-dim); margin: 6px 0 10px 0; line-height: 1.3; }
+.btn-buy {
+  width: 100%; padding: 10px; background: #1f2738; border: 1px solid var(--border);
+  color: #fff; border-radius: 10px; font-weight: 800; font-family: 'Orbitron', sans-serif;
+  font-size: 11px; cursor: pointer; transition: all 0.2s;
+}
+.btn-buy:not(:disabled):hover { background: var(--neon-pink); border-color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 0, 85, 0.4); }
+.btn-buy:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* SIDEBAR STATS & WHEEL */
+.stat-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 12px; }
+.stat-card span { font-size: 11px; color: var(--text-dim); display: block; }
+.stat-card b { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--neon-cyan); }
+
+.wheel-card {
+  background: linear-gradient(135deg, rgba(176, 0, 255, 0.15), rgba(0, 240, 255, 0.15));
+  border: 1px solid var(--neon-purple); border-radius: 16px; padding: 14px; text-align: center;
+}
+.btn-spin {
+  background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+  color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-family: 'Orbitron', sans-serif;
+  font-weight: 900; margin-top: 8px; cursor: pointer; width: 100%; box-shadow: 0 0 15px rgba(176,0,255,0.4);
+}
+
+/* FLOATING TEXT ANIMATION */
+.float-text {
+  position: fixed; pointer-events: none; font-family: 'Orbitron', sans-serif;
+  font-weight: 900; font-size: 18px; color: var(--neon-gold);
+  text-shadow: 0 0 8px #000; z-index: 1000; animation: floatUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) FORWARDS;
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--text); color: #000; font-weight: 900; padding: 10px 20px;
+  border-radius: 30px; z-index: 2000; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: 'Orbitron', sans-serif; font-size: 12px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* MODAL */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; z-index: 3000; padding: 16px;
+}
+.modal.show { display: flex; }
+.modal-content {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 20px;
+  max-width: 480px; width: 100%; padding: 20px; box-shadow: 0 0 40px rgba(0,240,255,0.2);
+}
+
+@media(max-width: 850px) {
+  .grid { grid-template-columns: 1fr; }
+  .money-val { font-size: 32px; }
+  .cards-list { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">⚡ NEON CITY TYCOON</div>
+    <div class="header-actions">
+      <button class="btn-icon" id="soundToggle">🔊</button>
+      <button class="btn-icon" id="settingsBtn">⚙️</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <section class="panel">
+        <div class="money-container">
+          <div class="money-title">Billetera de la Ciudad</div>
+          <div class="money-val" id="moneyDisplay">$0</div>
+          <div class="rate-val" id="rateDisplay">+$0 / seg</div>
+        </div>
+
+        <div class="city-grid" id="cityGrid"></div>
+
+        <button class="tap-btn" id="tapBtn">💥 RECAUDAR IMPUESTOS 💥</button>
+
+        <div class="combo-container">
+          <div style="font-size:11px; font-weight:800;">COMBO MULTIPLICADOR:</div>
+          <div class="combo-bar"><div class="combo-fill" id="comboFill"></div></div>
+          <div class="combo-text" id="comboText">x1.0</div>
+        </div>
+      </section>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="buildings">🏗️ Edificios</button>
+        <button class="tab" data-tab="upgrades">⚡ Mejoras</button>
+        <button class="tab" data-tab="ascend">🚀 Ascención (Prestigio)</button>
+        <button class="tab" data-tab="achievements">🏆 Logros</button>
+      </div>
+
+      <section id="buildingsTab" class="panel tab-panel">
+        <div class="cards-list" id="buildingsList"></div>
+      </section>
+
+      <section id="upgradesTab" class="panel tab-panel" style="display:none">
+        <div class="cards-list" id="upgradesList"></div>
+      </section>
+
+      <section id="ascendTab" class="panel tab-panel" style="display:none">
+        <div style="text-align:center; padding: 20px 10px;">
+          <h2 style="font-family:'Orbitron'; color:var(--neon-purple); margin-top:0;">REINICIO CUÁNTICO</h2>
+          <p style="color:var(--text-dim); font-size:14px; max-width:400px; margin: 0 auto 15px auto;">
+            Reinicia toda tu ciudad a cambio de <b>Fichas Cuánticas (🔮)</b>. ¡Cada ficha otorga un <b>+10% permanente</b> a TODOS tus ingresos futuros!
+          </p>
+          <div style="font-size: 24px; font-family:'Orbitron'; font-weight:900; color:var(--neon-gold); margin-bottom:15px;" id="ascendGain">
+            Ganarás: 0 🔮
+          </div>
+          <button class="tap-btn" id="ascendBtn" style="background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); box-shadow: 0 0 25px rgba(176,0,255,0.4);">
+            🚀 ASCENDER AHORA
+          </button>
+        </div>
+      </section>
+
+      <section id="achievementsTab" class="panel tab-panel" style="display:none">
+        <div id="achievementsList"></div>
+      </section>
+    </main>
+
+    <aside>
+      <section class="panel" style="margin-bottom:12px;">
+        <h3 style="margin-top:0; font-family:'Orbitron'; font-size:14px; color:var(--neon-cyan)">📊 MÉTIS Y ESTADÍSTICAS</h3>
+        <div class="stat-box">
+          <div class="stat-card"><span>Población</span><b id="popStat">0</b></div>
+          <div class="stat-card"><span>Fichas 🔮</span><b id="prestigeStat">0</b></div>
+          <div class="stat-card"><span>Construcciones</span><b id="builtStat">0</b></div>
+          <div class="stat-card"><span>Ganancia Total</span><b id="totalStat">$0</b></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="wheel-card">
+          <h3 style="margin:0; font-family:'Orbitron'; color:#fff;">🎰 RULETA CYBER</h3>
+          <p style="font-size:11px; color:var(--text-dim); margin: 4px 0 10px 0;">Proba tu suerte para ganar multiplicadores gigantescos o dinero instantáneo.</p>
+          <button class="btn-spin" id="spinBtn">🎲 GIRAR RULETA (GRATIS)</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const SAVE_KEY = 'neon_city_tycoon_v2';
+  const $ = id => document.getElementById(id);
+
+  // AUDIOS SINTETIZADOS (Sin archivos externos para compatibilidad total)
+  let soundEnabled = true;
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playSound(freq = 440, type = 'sine', duration = 0.08) {
+    if (!soundEnabled) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e){}
+  }
+
+  // FORMATO NÚMEROS ESTILO TYCOON TIKTOK
+  function fmt(n) {
+    n = Math.max(0, n || 0);
+    if (n >= 1e15) return '$' + (n / 1e15).toFixed(2) + ' Qd';
+    if (n >= 1e12) return '$' + (n / 1e12).toFixed(2) + ' T';
+    if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + ' B';
+    if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + ' M';
+    if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + ' K';
+    return '$' + Math.floor(n).toLocaleString('es-AR');
+  }
+
+  // CONFIGURACIÓN DE EDIFICIOS
+  const BUILDINGS = [
+    { id: 'pizzaria', name: '🍕 Pizzería Cyber', cost: 15, income: 1.5, pop: 5, icon: '🍕' },
+    { id: 'arcade', name: '🕹️ Salón Arcade', cost: 100, income: 8, pop: 15, icon: '🕹️' },
+    { id: 'cyber_cafe', name: '☕ Cyber Café 24/7', cost: 1100, income: 45, pop: 40, icon: '☕' },
+    { id: 'nightclub', name: '🪩 Club Neón', cost: 12000, income: 220, pop: 120, icon: '🪩' },
+    { id: 'datacenter', name: '🖥️ Servidor de IA', cost: 130000, income: 1400, pop: 300, icon: '🖥️' },
+    { id: 'quantum_lab', name: '🧪 Lab Cuántico', cost: 1400000, income: 9500, pop: 800, icon: '🧪' },
+    { id: 'spaceport', name: '🚀 Puerto Espacial', cost: 20000000, income: 70000, pop: 2500, icon: '🚀' },
+    { id: 'dyson_sphere', name: '🪐 Esfera de Dyson', cost: 350000000, income: 550000, pop: 10000, icon: '🪐' }
+  ];
+
+  const UPGRADES = [
+    { id: 'auto_click', name: '🤖 Auto-Clicker Bot', baseCost: 500, mult: 2.2, desc: '+15% de ingresos del tap automáticamente.' },
+    { id: 'hyper_drive', name: '⚡ Red de Fibra Óptica', baseCost: 2500, mult: 2.5, desc: 'Duplica los ingresos pasivos de la ciudad.' },
+    { id: 'ai_manager', name: '🧠 IA Financiera', baseCost: 15000, mult: 3.0, desc: 'Aumenta un +50% el valor de los clics.' },
+    { id: 'neon_marketing', name: '📢 Marketing Neón', baseCost: 80000, mult: 3.2, desc: 'Aumenta la población un 25% extra.' }
+  ];
+
+  const ACHIEVEMENTS = [
+    { id: 'first_click', title: '👆 Primer Millón', desc: 'Llega a ganar $1.000.000 en total', req: s => s.totalMoney >= 1000000, reward: 50000 },
+    { id: 'city_builder', title: '🏗️ Gran Arquitecto', desc: 'Construye 25 edificios', req: s => s.builtCount >= 25, reward: 200000 },
+    { id: 'spin_master', title: '🎲 Adicto a la Suerte', desc: 'Gira la ruleta 5 veces', req: s => (s.spins || 0) >= 5, reward: 100000 }
+  ];
+
+  // ESTADO DEL JUEGO
+  let state = {
+    money: 0,
+    totalMoney: 0,
+    prestigeTokens: 0,
+    builtCount: 0,
+    spins: 0,
+    plots: Array(15).fill(null),
+    upgrades: {},
+    achievements: {},
+    lastSave: Date.now()
+  };
+
+  let combo = 1.0;
+  let comboTimer = null;
+  let spinCooldown = false;
+
+  function loadGame() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+      if (saved) state = { ...state, ...saved };
+    } catch(e){}
+  }
+
+  function saveGame() {
+    try {
+      state.lastSave = Date.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    } catch(e){}
+  }
+
+  function showToast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function spawnFloatText(text, x, y) {
+    const el = document.createElement('div');
+    el.className = 'float-text';
+    el.textContent = text;
+    el.style.left = (x - 20) + 'px';
+    el.style.top = (y - 20) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+  }
+
+  function getPassiveIncome() {
+    let base = 0;
+    state.plots.forEach(id => {
+      if (id) {
+        const b = BUILDINGS.find(x => x.id === id);
+        if (b) base += b.income;
+      }
+    });
+
+    // Multiplicadores
+    let mult = 1 + (state.prestigeTokens * 0.1); // +10% por Token de prestigio
+    if (state.upgrades['hyper_drive']) mult *= (1 + state.upgrades['hyper_drive'] * 1.0);
+
+    return base * mult * combo;
+  }
+
+  function getTapValue() {
+    let base = 1;
+    if (state.upgrades['ai_manager']) base += state.upgrades['ai_manager'] * 25;
+    let mult = 1 + (state.prestigeTokens * 0.1);
+    return Math.floor((base + getPassiveIncome() * 0.05) * mult * combo);
+  }
+
+  function getPopulation() {
+    return state.plots.reduce((acc, id) => {
+      const b = BUILDINGS.find(x => x.id === id);
+      return acc + (b ? b.pop : 0);
+    }, 0);
+  }
+
+  function calcAscendGain() {
+    return Math.floor(Math.sqrt(state.totalMoney / 1000000));
+  }
+
+  function addMoney(amount) {
+    state.money += amount;
+    state.totalMoney += Math.max(0, amount);
+  }
+
+  // RENDER PRINCIPAL
+  function render() {
+    $('moneyDisplay').textContent = fmt(state.money);$('rateDisplay').textContent = '+' + fmt(getPassiveIncome()) + ' / seg';
+
+    $('popStat').textContent = getPopulation().toLocaleString('es-AR');$('prestigeStat').textContent = state.prestigeTokens;
+    $('builtStat').textContent = state.builtCount;
+    $('totalStat').textContent = fmt(state.totalMoney);
+
+    $('ascendGain').textContent = `Ganarás: ${calcAscendGain()} 🔮`;
+
+    // Render Grid de la Ciudad
+    const cityGrid = $('cityGrid');
+    cityGrid.innerHTML = '';
+    state.plots.forEach((buildingId, idx) => {
+      const plot = document.createElement('div');
+      plot.className = 'plot ' + (buildingId ? '' : 'empty');
+      if (buildingId) {
+        const b = BUILDINGS.find(x => x.id === buildingId);
+        plot.textContent = b ? b.icon : '🏢';
+      } else {
+        plot.textContent = '+';
+      }
+      plot.onclick = () => {
+        if (!buildingId) {
+          // Ir a la pestaña de comprar
+          switchTab('buildings');
+        } else {
+          playSound(600, 'sine');
+        }
+      };
+      cityGrid.appendChild(plot);
+    });
+
+    // Render Edificios Comprables
+    const bList = $('buildingsList');
+    bList.innerHTML = '';
+    BUILDINGS.forEach(b => {
+      const count = state.plots.filter(x => x === b.id).length;
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.innerHTML = `
+        <div class="card-title"><span>${b.name}</span> <span style="color:var(--neon-cyan)">x${count}</span></div>
+        <div class="card-desc">+${fmt(b.income)}/s · 👥 +${b.pop} Hab.</div>
+        <button class="btn-buy" ${state.money < b.cost || !state.plots.includes(null) ? 'disabled' : ''}>
+          COMPRAR (${fmt(b.cost)})
+        </button>
+      `;
+      card.querySelector('.btn-buy').onclick = () => buyBuilding(b);
+      bList.appendChild(card);
+    });
+
+    // Render Mejoras
+    const uList = $('upgradesList');
+    uList.innerHTML = '';
+    UPGRADES.forEach(u => {
+      const lv = state.upgrades[u.id] || 0;
+      const cost = Math.floor(u.baseCost * Math.pow(u.mult, lv));
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.innerHTML = `
+        <div class="card-title"><span>${u.name}</span> <span style="color:var(--neon-pink)">Nv. ${lv}</span></div>
+        <div class="card-desc">${u.desc}</div>
+        <button class="btn-buy" ${state.money < cost ? 'disabled' : ''}>
+          MEJORAR (${fmt(cost)})
+        </button>
+      `;
+      card.querySelector('.btn-buy').onclick = () => buyUpgrade(u, cost);
+      uList.appendChild(card);
+    });
+
+    // Render Logros
+    const aList = $('achievementsList');
+    aList.innerHTML = '';
+    ACHIEVEMENTS.forEach(a => {
+      const unlocked = state.achievements[a.id] || a.req(state);
+      if (unlocked && !state.achievements[a.id]) {
+        state.achievements[a.id] = true;
+        addMoney(a.reward);
+        showToast(`🏆 ¡LOGRO! ${a.title} (+${fmt(a.reward)})`);
+      }
+      const div = document.createElement('div');
+      div.style.cssText = `background:var(--card); padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid ${unlocked ? 'var(--neon-green)' : 'var(--border)'}; opacity: ${unlocked ? 1 : 0.5}`;
+      div.innerHTML = `<b>${a.title}</b><br><small>${a.desc}</small>`;
+      aList.appendChild(div);
+    });
+  }
+
+  function buyBuilding(b) {
+    const emptyIdx = state.plots.indexOf(null);
+    if (state.money >= b.cost && emptyIdx !== -1) {
+      state.money -= b.cost;
+      state.plots[emptyIdx] = b.id;
+      state.builtCount++;
+      playSound(800, 'square');
+      showToast(`🏗️ ¡Construiste ${b.name}!`);
+      render();
+      saveGame();
+    }
+  }
+
+  function buyUpgrade(u, cost) {
+    if (state.money >= cost) {
+      state.money -= cost;
+      state.upgrades[u.id] = (state.upgrades[u.id] || 0) + 1;
+      playSound(900, 'triangle');
+      showToast(`⚡ ¡Mejora ${u.name} comprada!`);
+      render();
+      saveGame();
+    }
+  }
+
+  // ACCIÓN DE TAP / CLICK
+  $('tapBtn').addEventListener('click', e => {
+    const gain = getTapValue();
+    addMoney(gain);
+    playSound(400 + Math.random() * 200, 'sine');
+    spawnFloatText('+' + fmt(gain), e.clientX || window.innerWidth / 2, e.clientY || window.innerHeight / 2);
+
+    // Sistema de Combo Vicioso
+    combo = Math.min(5.0, combo + 0.05);
+    $('comboText').textContent = 'x' + combo.toFixed(1);$('comboFill').style.width = ((combo - 1) / 4 * 100) + '%';
+
+    clearTimeout(comboTimer);
+    comboTimer = setTimeout(() => {
+      combo = 1.0;
+      $('comboText').textContent = 'x1.0';$('comboFill').style.width = '0%';
+      render();
+    }, 1500);
+
+    render();
+  });
+
+  // RULETA DE LA SUERTE
+  $('spinBtn').addEventListener('click', () => {
+    if (spinCooldown) return;
+    spinCooldown = true;
+    playSound(300, 'sine', 0.5);
+    showToast('🎲 Girando ruleta...');
+    
+    setTimeout(() => {
+      state.spins = (state.spins || 0) + 1;
+      const rand = Math.random();
+      if (rand < 0.5) {
+        const reward = Math.max(500, getPassiveIncome() * 60);
+        addMoney(reward);
+        showToast(`🎉 ¡Ganaste un Bonus de ${fmt(reward)}!`);
+      } else {
+        combo = 3.0;
+        $('comboText').textContent = 'x3.0';$('comboFill').style.width = '50%';
+        showToast('🔥 ¡MEGA COMBO x3 ACTIVADO!');
+      }
+      spinCooldown = false;
+      render();
+      saveGame();
+    }, 1200);
+  });
+
+  // PRESTIGIO / ASCENCIÓN
+  $('ascendBtn').addEventListener('click', () => {
+    const gain = calcAscendGain();
+    if (gain < 1) {
+      showToast('❌ Necesitas al menos 1 🔮 para Ascender (Gana $1M total)');
+      return;
+    }
+    if (confirm(`¿Reiniciar tu ciudad a cambio de ${gain} Fichas Cuánticas 🔮?`)) {
+      state.prestigeTokens += gain;
+      state.money = 0;
+      state.builtCount = 0;
+      state.plots = Array(15).fill(null);
+      playSound(1200, 'sawtooth', 0.5);
+      showToast(`🚀 ¡ASCENDISTE! +${gain} Fichas ganadas.`);
+      render();
+      saveGame();
+    }
+  });
+
+  // TABS LOGIC
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    
+    const targetTab = document.querySelector(`[data-tab="${tabId}"]`);
+    if (targetTab) targetTab.classList.add('active');
+    $(tabId + 'Tab').style.display = 'block';
+  }
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => switchTab(t.dataset.tab);
+  });
+
+  // CONFIGURACIÓN & SONIDO
+  $('soundToggle').onclick = () => {
+    soundEnabled = !soundEnabled;
+    $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  };
+
+  $('settingsBtn').onclick = () => {
+    const m = $('modal');$('modalContent').innerHTML = `
+      <h2 style="font-family:'Orbitron'; color:var(--neon-cyan); margin-top:0;">⚙️ OPCIONES</h2>
+      <p style="color:var(--text-dim); font-size:13px;">Guardado automático activado en tu navegador.</p>
+      <button class="btn-buy" id="resetBtn" style="background:var(--neon-pink); margin-top:10px;">🗑️ BORRAR TODO EL PROGRESO</button>
+      <button class="btn-buy" id="closeModalBtn" style="margin-top:10px;">CERRAR</button>
+    `;
+    m.classList.add('show');
+    $('closeModalBtn').onclick = () => m.classList.remove('show');$('resetBtn').onclick = () => {
+      if (confirm('¿Seguro que quieres borrar todo tu progreso?')) {
+        localStorage.removeItem(SAVE_KEY);
+        location.reload();
+      }
+    };
+  };
+
+  // LOOP PRINCIPAL (1 SEGUNDO)
+  loadGame();
+  
+  // Calcular ingresos offline
+  const now = Date.now();
+  const offlineTime = (now - state.lastSave) / 1000;
+  if (offlineTime > 5) {
+    const offlineGain = Math.floor(offlineTime * getPassiveIncome() * 0.5);
+    if (offlineGain > 0) {
+      addMoney(offlineGain);
+      showToast(`🌙 Ganaste ${fmt(offlineGain)} mientras no estabas.`);
+    }
+  }
+
+  render();
+
+  setInterval(() => {
+    const passive = getPassiveIncome();
+    if (passive > 0) {
+      addMoney(passive);
+    }
+    render();
+    saveGame();
+  }, 1000);
+
+})();
+</script>
+</body>
+</html>
